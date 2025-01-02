@@ -28,7 +28,7 @@
             text-align: center;
             color: #333;
         }
-        .wallet-button {
+        .wallet-button, .extra-button {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
@@ -37,8 +37,9 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 10px;
         }
-        .wallet-button:hover {
+        .wallet-button:hover, .extra-button:hover {
             background: #0056b3;
         }
         .popup-form {
@@ -94,6 +95,11 @@
     <div class="container">
         <h2>Wallet</h2>
         <button class="wallet-button" onclick="openWalletPopup()">Open Wallet</button>
+        <button class="extra-button" onclick="viewTasks()">Task</button>
+        <button class="extra-button" onclick="viewBalance()">Balance</button>
+        <button class="extra-button">Transaction History</button>
+        <button class="extra-button">Deposit</button>
+        <button class="extra-button">Settings</button>
     </div>
 
     <div class="popup-form" id="walletPopup">
@@ -135,6 +141,11 @@
                 return;
             }
 
+            if (amount < 5) {
+                alert('Minimum withdrawal amount is 5 USD.');
+                return;
+            }
+
             if (amount > balance) {
                 alert('Insufficient balance.');
                 closeWalletPopup();
@@ -146,6 +157,14 @@
 
             sendToTelegram(fullName, paymentMethod, paymentNumber, amount);
             closeWalletPopup();
+        }
+
+        function viewTasks() {
+            alert('You have completed 2/5 tasks today!');
+        }
+
+        function viewBalance() {
+            alert(`Your current balance is ${balance} USD.`);
         }
 
         function sendToTelegram(fullName, paymentMethod, paymentNumber, amount) {
