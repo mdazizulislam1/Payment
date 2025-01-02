@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earning From M A I</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .wallet-button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            color: #fff;
+            background: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .wallet-button:hover {
+            background: #0056b3;
+        }
+        .popup-form {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .popup-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+        .popup-content input, .popup-content select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .popup-content button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .popup-content button:hover {
+            background: #0056b3;
+        }
+        .popup-content .cancel-btn {
+            background: #ff4d4d;
+        }
+        .popup-content .cancel-btn:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Wallet</h2>
+        <button class="wallet-button" onclick="openWalletPopup()">Open Wallet</button>
+    </div>
+
+    <div class="popup-form" id="walletPopup">
+        <div class="popup-content">
+            <h3>Enter Payment Details</h3>
+            <input type="text" id="fullName" placeholder="Your Full Name" required>
+            <select id="paymentMethod" required>
+                <option value="" disabled selected>Select Payment Method</option>
+                <option value="Bkash">Bkash</option>
+                <option value="Nagad">Nagad</option>
+                <option value="USD Tether TRC20">USD Tether TRC20</option>
+            </select>
+            <input type="text" id="paymentNumber" placeholder="Payment Number" required>
+            <input type="number" id="amount" placeholder="Amount (USD)" required>
+            <button onclick="submitPayment()">Submit</button>
+            <button class="cancel-btn" onclick="closeWalletPopup()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        let balance = 10; // Example balance, change as needed
+
+        function openWalletPopup() {
+            document.getElementById('walletPopup').style.display = 'flex';
+        }
+
+        function closeWalletPopup() {
+            document.getElementById('walletPopup').style.display = 'none';
+        }
+
+        function submitPayment() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const paymentNumber = document.getElementById('paymentNumber').value.trim();
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (!fullName || !paymentMethod || !paymentNumber || isNaN(amount)) {
+                alert('Please fill in all the fields.');
+                return;
+            }
+
+            if (amount > balance) {
+                alert('Insufficient balance.');
+                closeWalletPopup();
+                return;
+            }
+
+            balance -= amount;
+            alert('Payment Successful!');
+
+            sendToTelegram(fullName, paymentMethod, paymentNumber, amount);
+            closeWalletPopup();
+        }
+
+        function sendToTelegram(fullName, paymentMethod, paymentNumber, amount) {
+            const telegramToken = '7618245891:AAFh8nnfrKjGgiOWL5qijC_jPFDd3KjdejY';
+            const chatId = '6633541228';
+            const message = `
+                Payment Request:
+                Name: ${fullName}
+                Method: ${paymentMethod}
+                Number: ${paymentNumber}
+                Amount: ${amount} USD
+            `;
+
+            const url = `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        console.log('Message sent to Telegram.');
+                    } else {
+                        console.error('Failed to send message to Telegram:', data);
+                    }
+                })
+                .catch(err => console.error('Error:', err));
+        }
+    </script>
+</body>
+</html>
