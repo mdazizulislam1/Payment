@@ -132,12 +132,12 @@
     </div>
 
     <script>
-        let balance = 10; // Example balance, change as needed
+        let balance = parseFloat(localStorage.getItem('balance')) || 0; // Start with balance from local storage or 0
+        let pendingTasks = JSON.parse(localStorage.getItem('pendingTasks')) || [];
         let taskList = [
             { id: 1, title: 'Task 1', description: 'Description for task 1', link: 'https://example.com/task1', rate: 2 },
             { id: 2, title: 'Task 2', description: 'Description for task 2', link: 'https://example.com/task2', rate: 5 },
         ];
-        let completedTasks = [];
 
         function viewBalance() {
             alert(`Your current balance is ${balance} USD.`);
@@ -186,6 +186,7 @@
             }
 
             balance -= amount;
+            localStorage.setItem('balance', balance); // Update balance in local storage
             alert('Payment Submitted!');
 
             sendToTelegram(fullName, paymentMethod, paymentNumber, amount);
@@ -201,16 +202,11 @@
                 return;
             }
 
-            if (taskImage) {
-                // Here you could upload the image to a server if required
-                alert('Proof submitted with image!');
-            } else {
-                alert('Proof submitted without image!');
-            }
+            const task = taskList.shift();
+            pendingTasks.push({ task, proof: taskProof, image: taskImage });
+            localStorage.setItem('pendingTasks', JSON.stringify(pendingTasks));
 
-            completedTasks.push(taskList[0]);
-            taskList.shift();  // Remove the completed task from list
-            sendTaskToTelegram(taskProof, taskImage);
+            alert('Task submitted and pending review.');
             closeTaskPopup();
         }
 
@@ -219,8 +215,8 @@
         }
 
         function sendToTelegram(fullName, paymentMethod, paymentNumber, amount) {
-            const telegramToken = '7618245891:AAFh8nnfrKjGgiOWL5qijC_jPFDd3KjdejY';
-            const chatId = '6633541228';
+            const telegramToken = 'YOUR_TELEGRAM_BOT_TOKEN';
+            const chatId = 'YOUR_CHAT_ID';
             const message = `
                 Payment Request:
                 Name: ${fullName}
@@ -240,42 +236,6 @@
                     }
                 })
                 .catch(err => console.error('Error:', err));
-        }
-
-        function sendTaskToTelegram(taskProof, taskImage) {
-            const telegramToken = '7618245891:AAFh8nnfrKjGgiOWL5qijC_jPFDd3KjdejY';
-            const chatId = '6633541228';
-            const message = `
-                Task Submitted:
-                Proof: ${taskProof}
-                Image: ${taskImage ? 'Image Attached' : 'No Image'}
-            `;
-
-            const url = `https://api.telegram.org/bot${telegramToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.ok) {
-                        console.log('Task submission sent to Telegram.');
-                    } else {
-                        console.error('Failed to send task submission to Telegram:', data);
-                    }
-                })
-                .catch(err => console.error('Error:', err));
-        }
-
-        function depositFunds() {
-            const depositAmount = prompt('Enter deposit amount (USD):');
-            if (depositAmount && !isNaN(depositAmount) && depositAmount > 0) {
-                balance += parseFloat(depositAmount);
-                alert(`Successfully deposited ${depositAmount} USD. New balance is ${balance} USD.`);
-            } else {
-                alert('Invalid deposit amount.');
-            }
-        }
-
-        function openSettings() {
-            alert('Settings:\n1. Change password\n2. Update profile\n3. Notifications');
         }
     </script>
 </body>
