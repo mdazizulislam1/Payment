@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earning From M A I</title>
+    <title>MAI NETWORK</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            background-color: #f0f0f5;
             margin: 0;
             padding: 0;
             display: flex;
@@ -17,32 +17,32 @@
         }
         .container {
             width: 90%;
-            max-width: 400px;
+            max-width: 450px;
             background: #fff;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             margin-top: 20px;
+            text-align: center;
         }
         h2 {
-            text-align: center;
             color: #333;
         }
-        .wallet-button {
+        .button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
+            margin: 10px 0;
             font-size: 1rem;
             color: #fff;
             background: #007bff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
         }
-        .wallet-button:hover {
+        .button:hover {
             background: #0056b3;
         }
-        .popup-form, .task-popup {
+        .popup {
             position: fixed;
             top: 0;
             left: 0;
@@ -54,7 +54,7 @@
             align-items: center;
             z-index: 1000;
         }
-        .popup-content, .task-content {
+        .popup-content {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
@@ -63,15 +63,7 @@
             width: 90%;
             max-width: 400px;
         }
-        .popup-content input, .popup-content select, .task-content input, .task-content textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        .popup-content button, .task-content button {
+        .popup-content button {
             padding: 10px 20px;
             background: #007bff;
             color: #fff;
@@ -80,143 +72,99 @@
             font-size: 1rem;
             cursor: pointer;
         }
-        .popup-content button:hover, .task-content button:hover {
-            background: #0056b3;
-        }
-        .popup-content .cancel-btn, .task-content .cancel-btn {
+        .popup-content .cancel-btn {
             background: #ff4d4d;
         }
-        .popup-content .cancel-btn:hover, .task-content .cancel-btn:hover {
+        .popup-content .cancel-btn:hover {
             background: #cc0000;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Wallet</h2>
-        <button class="wallet-button" onclick="viewBalance()">Balance</button>
-        <button class="wallet-button" onclick="viewTasks()">Task</button>
-        <button class="wallet-button" onclick="openWalletPopup()">Wallet</button>
-        <button class="wallet-button" onclick="depositFunds()">Deposit</button>
-        <button class="wallet-button" onclick="openSettings()">Settings</button>
+        <h2>MAI NETWORK</h2>
+        <button class="button" onclick="showPopup('balancePopup')">BALANCE</button>
+        <button class="button" onclick="showPopup('taskPopup')">TASK</button>
+        <button class="button" onclick="showPopup('taskPendingPopup')">TASK PENDING</button>
+        <button class="button" onclick="showPopup('miningPopup')">MINING</button>
+        <button class="button" onclick="showPopup('withdrawPopup')">WITHDRAW</button>
+        <button class="button" onclick="showPopup('transactionHistoryPopup')">TRANSACTION HISTORY</button>
+        <button class="button" onclick="showPopup('helpPopup')">HELP</button>
+        <button class="button" onclick="showPopup('supportTeamPopup')">SUPPORT TEAM</button>
     </div>
 
-    <div class="popup-form" id="walletPopup">
+    <!-- Popups -->
+    <div class="popup" id="balancePopup">
         <div class="popup-content">
-            <h3>Enter Payment Details</h3>
-            <input type="text" id="fullName" placeholder="Your Full Name" required>
-            <select id="paymentMethod" required>
-                <option value="" disabled selected>Select Payment Method</option>
-                <option value="Bkash">Bkash</option>
-                <option value="Nagad">Nagad</option>
-                <option value="USD Tether TRC20">USD Tether TRC20</option>
-            </select>
-            <input type="text" id="paymentNumber" placeholder="Payment Number" required>
-            <input type="number" id="amount" placeholder="Amount (USD)" required>
-            <button onclick="submitPayment()">Submit</button>
-            <button class="cancel-btn" onclick="closeWalletPopup()">Cancel</button>
+            <h3>Your Current Balance</h3>
+            <p>$100 (Example balance)</p>
+            <button onclick="closePopup('balancePopup')">Close</button>
         </div>
     </div>
 
-    <div class="task-popup" id="taskPopup">
-        <div class="task-content">
-            <h3>Complete Task</h3>
-            <h4 id="taskTitle"></h4>
-            <p id="taskDescription"></p>
-            <a id="taskLink" href="#" target="_blank">Task Link</a>
-            <input type="text" id="taskProof" placeholder="Submit proof here">
-            <input type="file" id="taskImage">
-            <button onclick="submitTask()">Submit Task</button>
-            <button class="cancel-btn" onclick="closeTaskPopup()">Cancel</button>
+    <div class="popup" id="taskPopup">
+        <div class="popup-content">
+            <h3>Available Tasks</h3>
+            <p>Task details will be shown here.</p>
+            <button onclick="closePopup('taskPopup')">Close</button>
+        </div>
+    </div>
+
+    <div class="popup" id="taskPendingPopup">
+        <div class="popup-content">
+            <h3>Pending Tasks</h3>
+            <p>No pending tasks at the moment.</p>
+            <button onclick="closePopup('taskPendingPopup')">Close</button>
+        </div>
+    </div>
+
+    <div class="popup" id="miningPopup">
+        <div class="popup-content">
+            <h3>Mining Dashboard</h3>
+            <p>Mining status and rewards will be shown here.</p>
+            <button onclick="closePopup('miningPopup')">Close</button>
+        </div>
+    </div>
+
+    <div class="popup" id="withdrawPopup">
+        <div class="popup-content">
+            <h3>Withdraw Funds</h3>
+            <p>Withdrawal options will be available here.</p>
+            <button onclick="closePopup('withdrawPopup')">Close</button>
+        </div>
+    </div>
+
+    <div class="popup" id="transactionHistoryPopup">
+        <div class="popup-content">
+            <h3>Transaction History</h3>
+            <p>Transaction records will be displayed here.</p>
+            <button onclick="closePopup('transactionHistoryPopup')">Close</button>
+        </div>
+    </div>
+
+    <div class="popup" id="helpPopup">
+        <div class="popup-content">
+            <h3>Help Center</h3>
+            <p>FAQ and support articles will be available here.</p>
+            <button onclick="closePopup('helpPopup')">Close</button>
+        </div>
+    </div>
+
+    <div class="popup" id="supportTeamPopup">
+        <div class="popup-content">
+            <h3>Contact Support Team</h3>
+            <p>Support team contact information will be shown here.</p>
+            <button onclick="closePopup('supportTeamPopup')">Close</button>
         </div>
     </div>
 
     <script>
-        let balance = parseFloat(localStorage.getItem('balance')) || 0; 
-        let taskList = [
-            { id: 1, title: 'Task 1', description: 'Description for task 1', link: 'https://example.com/task1', rate: 2 },
-            { id: 2, title: 'Task 2', description: 'Description for task 2', link: 'https://example.com/task2', rate: 5 },
-        ];
-
-        function viewBalance() {
-            alert(`Your current balance is ${balance} USD.`);
+        function showPopup(popupId) {
+            document.getElementById(popupId).style.display = 'flex';
         }
 
-        function viewTasks() {
-            if (taskList.length > 0) {
-                const task = taskList[0];
-                document.getElementById('taskTitle').innerText = task.title;
-                document.getElementById('taskDescription').innerText = task.description;
-                document.getElementById('taskLink').href = task.link;
-                document.getElementById('taskPopup').style.display = 'flex';
-            } else {
-                alert('No tasks available.');
-            }
-        }
-
-        function submitTask() {
-            const taskProof = document.getElementById('taskProof').value.trim();
-            const taskImage = document.getElementById('taskImage').files[0];
-
-            if (!taskProof && !taskImage) {
-                alert('Please provide proof for the task.');
-                return;
-            }
-
-            const task = taskList.shift();
-            sendTaskToTelegram(task, taskProof);
-            alert('Task submitted and awaiting approval.');
-            closeTaskPopup();
-        }
-
-        function sendTaskToTelegram(task, proof) {
-            const telegramToken = '7618245891:AAFh8nnfrKjGgiOWL5qijC_jPFDd3KjdejY';
-            const chatId = '6633541228';
-
-            const message = `
-                Task Submission:
-                Title: ${task.title}
-                Description: ${task.description}
-                Proof: ${proof}
-            `;
-
-            // Send text message
-            fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: message
-                })
-            });
-
-            // Send photo if available
-            const taskImage = document.getElementById('taskImage').files[0];
-            if (taskImage) {
-                const formData = new FormData();
-                formData.append('chat_id', chatId);
-                formData.append('photo', taskImage);
-
-                fetch(`https://api.telegram.org/bot${telegramToken}/sendPhoto`, {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => console.log("Image sent to Telegram:", data))
-                .catch(err => console.error("Error:", err));
-            }
-        }
-
-        function openWalletPopup() {
-            document.getElementById('walletPopup').style.display = 'flex';
-        }
-
-        function closeWalletPopup() {
-            document.getElementById('walletPopup').style.display = 'none';
-        }
-
-        function closeTaskPopup() {
-            document.getElementById('taskPopup').style.display = 'none';
+        function closePopup(popupId) {
+            document.getElementById(popupId).style.display = 'none';
         }
     </script>
 </body>
