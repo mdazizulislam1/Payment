@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Earning From M A I</title>
     <style>
-        /* Styling code remains unchanged */
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
@@ -29,7 +28,7 @@
             text-align: center;
             color: #333;
         }
-        .wallet-button, .extra-button {
+        .wallet-button {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
@@ -40,7 +39,7 @@
             cursor: pointer;
             margin-top: 10px;
         }
-        .wallet-button:hover, .extra-button:hover {
+        .wallet-button:hover {
             background: #0056b3;
         }
         .popup-form, .task-popup {
@@ -157,8 +156,9 @@
 
         function submitTask() {
             const taskProof = document.getElementById('taskProof').value.trim();
+            const taskImage = document.getElementById('taskImage').files[0];
 
-            if (!taskProof) {
+            if (!taskProof && !taskImage) {
                 alert('Please provide proof for the task.');
                 return;
             }
@@ -180,33 +180,44 @@
                 Proof: ${proof}
             `;
 
-            const keyboard = {
-                inline_keyboard: [
-                    [{ text: "Confirm", callback_data: `confirm_${task.rate}` }],
-                    [{ text: "Reject", callback_data: "reject" }]
-                ]
-            };
-
-            const url = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
-            fetch(url, {
+            // Send text message
+            fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     chat_id: chatId,
-                    text: message,
-                    reply_markup: keyboard
+                    text: message
                 })
-            })
-            .then(response => response.json())
-            .then(data => console.log("Task sent to Telegram:", data))
-            .catch(err => console.error("Error:", err));
+            });
+
+            // Send photo if available
+            const taskImage = document.getElementById('taskImage').files[0];
+            if (taskImage) {
+                const formData = new FormData();
+                formData.append('chat_id', chatId);
+                formData.append('photo', taskImage);
+
+                fetch(`https://api.telegram.org/bot${telegramToken}/sendPhoto`, {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => console.log("Image sent to Telegram:", data))
+                .catch(err => console.error("Error:", err));
+            }
+        }
+
+        function openWalletPopup() {
+            document.getElementById('walletPopup').style.display = 'flex';
+        }
+
+        function closeWalletPopup() {
+            document.getElementById('walletPopup').style.display = 'none';
         }
 
         function closeTaskPopup() {
             document.getElementById('taskPopup').style.display = 'none';
         }
-
-        // Other functions remain unchanged
     </script>
 </body>
 </html>
