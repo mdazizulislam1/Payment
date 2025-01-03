@@ -3,266 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAI NETWORK</title>
+    <title>MAI NETWORK Dashboard</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f5;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
+
         .container {
-            width: 90%;
-            max-width: 450px;
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            margin-top: 20px;
             text-align: center;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
         }
-        h2 {
+
+        header h1 {
+            font-size: 2.5em;
             color: #333;
+            margin-bottom: 30px;
         }
+
+        .buttons-container {
+            display: grid;
+            gap: 15px;
+        }
+
         .button {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            font-size: 1rem;
-            color: #fff;
-            background: #007bff;
+            background-color: #007bff;
             border: none;
-            border-radius: 5px;
+            padding: 15px;
+            font-size: 1.2em;
+            color: #fff;
+            border-radius: 8px;
             cursor: pointer;
-        }
-        .button:hover {
-            background: #0056b3;
-        }
-        .popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
+            display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            transition: background-color 0.3s ease;
         }
-        .popup-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 400px;
-        }
-        .popup-content button {
-            padding: 10px 20px;
-            background: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        .popup-content .cancel-btn {
-            background: #ff4d4d;
-        }
-        .popup-content .cancel-btn:hover {
-            background: #cc0000;
-        }
-        .input-group {
-            margin: 10px 0;
-            width: 100%;
-        }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .input-group button {
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-        .input-group button:hover {
+
+        .button:hover {
             background-color: #0056b3;
+        }
+
+        .button .icon {
+            margin-right: 10px;
+        }
+
+        .balance {
+            background-color: #28a745;
+        }
+
+        .balance:hover {
+            background-color: #218838;
+        }
+
+        .task {
+            background-color: #007bff;
+        }
+
+        .task:hover {
+            background-color: #0056b3;
+        }
+
+        .pending-task {
+            background-color: #ffc107;
+        }
+
+        .pending-task:hover {
+            background-color: #e0a800;
+        }
+
+        .withdraw {
+            background-color: #dc3545;
+        }
+
+        .withdraw:hover {
+            background-color: #c82333;
+        }
+
+        .transaction-history {
+            background-color: #6c757d;
+        }
+
+        .transaction-history:hover {
+            background-color: #5a6268;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>MAI NETWORK</h2>
-        <button class="button" onclick="showPopup('balancePopup')">BALANCE</button>
-        <button class="button" onclick="showPopup('taskPopup')">TASK</button>
-        <button class="button" onclick="showPopup('taskPendingPopup')">TASK PENDING</button>
-        <button class="button" onclick="showPopup('miningPopup')">MINING</button>
-        <button class="button" onclick="showPopup('withdrawPopup')">WITHDRAW</button>
-        <button class="button" onclick="showPopup('transactionHistoryPopup')">TRANSACTION HISTORY</button>
-        <button class="button" onclick="showPopup('helpPopup')">HELP</button>
-        <button class="button" onclick="showPopup('supportTeamPopup')">SUPPORT TEAM</button>
-    </div>
+        <header>
+            <h1>MAI NETWORK</h1>
+        </header>
 
-    <!-- Popups -->
-    <div class="popup" id="balancePopup">
-        <div class="popup-content">
-            <h3>Your Current Balance</h3>
-            <p id="balance">$0</p>
-            <button onclick="closePopup('balancePopup')">Close</button>
-        </div>
-    </div>
-
-    <div class="popup" id="taskPopup">
-        <div class="popup-content">
-            <h3>Available Tasks</h3>
-            <div class="task">
-                <h4>Task 1</h4>
-                <p>Description: Complete survey</p>
-                <p>Rate: $10</p>
-                <input type="file" id="fileTask1" />
-                <textarea id="proofTask1" placeholder="Enter proof text..."></textarea>
-                <button onclick="submitTask('task1')">Submit</button>
-            </div>
-            <div class="task">
-                <h4>Task 2</h4>
-                <p>Description: Watch video</p>
-                <p>Rate: $5</p>
-                <input type="file" id="fileTask2" />
-                <textarea id="proofTask2" placeholder="Enter proof text..."></textarea>
-                <button onclick="submitTask('task2')">Submit</button>
-            </div>
-            <button onclick="closePopup('taskPopup')">Close</button>
-        </div>
-    </div>
-
-    <div class="popup" id="taskPendingPopup">
-        <div class="popup-content">
-            <h3>Pending Tasks</h3>
-            <p>No pending tasks at the moment.</p>
-            <button onclick="closePopup('taskPendingPopup')">Close</button>
-        </div>
-    </div>
-
-    <div class="popup" id="miningPopup">
-        <div class="popup-content">
-            <h3>Mining</h3>
-            <a href="https://www.example.com/mining" target="_blank">Go to Mining</a>
-            <button onclick="closePopup('miningPopup')">Close</button>
-        </div>
-    </div>
-
-    <div class="popup" id="withdrawPopup">
-        <div class="popup-content">
-            <h3>Withdraw Funds</h3>
-            <div class="input-group">
-                <input type="text" id="withdrawName" placeholder="Enter your name" />
-                <input type="text" id="withdrawContact" placeholder="Enter your Telegram/WhatsApp number" />
-                <select id="withdrawMethod">
-                    <option value="">Select Payment Method</option>
-                    <option value="bikash">Bikash</option>
-                    <option value="nogod">Nogod</option>
-                    <option value="usdt">USDT Tether TRC 20</option>
-                </select>
-                <input type="number" id="withdrawAmount" placeholder="Enter amount" />
-                <button onclick="submitWithdraw()">Submit</button>
-            </div>
-            <button onclick="closePopup('withdrawPopup')">Close</button>
-        </div>
-    </div>
-
-    <div class="popup" id="transactionHistoryPopup">
-        <div class="popup-content">
-            <h3>Transaction History</h3>
-            <p>Payment requests and status will be shown here.</p>
-            <button onclick="closePopup('transactionHistoryPopup')">Close</button>
-        </div>
-    </div>
-
-    <div class="popup" id="helpPopup">
-        <div class="popup-content">
-            <h3>Help Center</h3>
-            <a href="https://www.example.com/help" target="_blank">Go to Help Center</a>
-            <button onclick="closePopup('helpPopup')">Close</button>
-        </div>
-    </div>
-
-    <div class="popup" id="supportTeamPopup">
-        <div class="popup-content">
-            <h3>Contact Support Team</h3>
-            <a href="https://www.example.com/support" target="_blank">Contact Support Team</a>
-            <button onclick="closePopup('supportTeamPopup')">Close</button>
+        <div class="buttons-container">
+            <button class="button balance" onclick="navigateTo('balance')">
+                <span class="icon">💰</span> BALANCE
+            </button>
+            <button class="button task" onclick="navigateTo('task')">
+                <span class="icon">📋</span> TASK
+            </button>
+            <button class="button pending-task" onclick="navigateTo('pending-task')">
+                <span class="icon">⏳</span> TASK PENDING
+            </button>
+            <button class="button withdraw" onclick="navigateTo('withdraw')">
+                <span class="icon">💸</span> WITHDRAW
+            </button>
+            <button class="button transaction-history" onclick="navigateTo('transaction-history')">
+                <span class="icon">📜</span> TRANSACTION HISTORY
+            </button>
         </div>
     </div>
 
     <script>
-        function showPopup(popupId) {
-            document.getElementById(popupId).style.display = 'flex';
+        function navigateTo(page) {
+            alert('Navigating to: ' + page);
+            // Here, you can add actual page navigation or actions based on the button clicked.
         }
-
-        function closePopup(popupId) {
-            document.getElementById(popupId).style.display = 'none';
-        }
-
-        // Function to update balance in localStorage
-        function updateBalance(amount) {
-            let balance = localStorage.getItem('balance');
-            if (!balance) {
-                balance = 0;
-            }
-            balance = parseFloat(balance) + parseFloat(amount);
-            localStorage.setItem('balance', balance);
-            document.getElementById('balance').innerText = "$" + balance;
-        }
-
-        // Submitting Task
-        function submitTask(taskId) {
-            let proofText = document.getElementById('proof' + taskId).value;
-            let proofFile = document.getElementById('file' + taskId).files[0];
-
-            if (proofText && proofFile) {
-                // Send to Telegram (simulate)
-                alert('Task submitted for review.');
-                // Update balance if approved (example)
-                updateBalance(taskId === 'task1' ? 10 : 5);
-            } else {
-                alert('Please provide proof before submitting.');
-            }
-        }
-
-        // Handle Withdraw Submission
-        function submitWithdraw() {
-            let name = document.getElementById('withdrawName').value;
-            let contact = document.getElementById('withdrawContact').value;
-            let method = document.getElementById('withdrawMethod').value;
-            let amount = document.getElementById('withdrawAmount').value;
-
-            if (!name || !contact || !method || !amount || parseFloat(amount) < 5) {
-                alert('Please fill all fields and ensure the amount is at least $5.');
-                return;
-            }
-
-            // Send withdrawal info to Telegram (simulate)
-            alert('Withdraw request submitted.');
-            // Update balance (example)
-            updateBalance(-amount);
-        }
-
-        // Initialize balance from localStorage
-        window.onload = function() {
-            let balance = localStorage.getItem('balance');
-            if (balance) {
-                document.getElementById('balance').innerText = "$" + balance;
-            }
-        };
     </script>
 </body>
 </html>
